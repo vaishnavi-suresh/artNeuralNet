@@ -6,14 +6,19 @@ authors = [
     {name = "Vaishnavi",email = "vs2753@nyu.edu"}
 ]
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.14"
 dependencies = [
     "kagglehub[pandas-datasets] (>=0.3.12,<0.4.0)",
-    "kaggle (>=1.7.4.5,<2.0.0.0)"
+    "kaggle (>=1.7.4.5,<2.0.0.0)",
+    "scikit-image (>=0.25.2,<0.26.0)",
+    "torch (>=2.8.0,<3.0.0)",
+    "torchvision (>=0.23.0,<0.24.0)"
 ]
+
 
 [tool.poetry]
 packages = [{include = "artneuralnet", from = "src"}]
+
 
 
 [build-system]
