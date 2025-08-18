@@ -1,0 +1,20 @@
+[project]
+name = "artneuralnet"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Vaishnavi",email = "vs2753@nyu.edu"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "kagglehub[pandas-datasets] (>=0.3.12,<0.4.0)"
+]
+
+[tool.poetry]
+packages = [{include = "artneuralnet", from = "src"}]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
