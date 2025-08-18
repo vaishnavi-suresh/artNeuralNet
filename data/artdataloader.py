@@ -2,20 +2,25 @@
 # pip install kagglehub[pandas-datasets]
 import kagglehub
 from kagglehub import KaggleDatasetAdapter
+from kaggle.api.kaggle_api_extended import KaggleApi
+import pandas as pd
+
+api= KaggleApi()
+api.authenticate()
 
 # Set the path to the file you'd like to load
-fp = "./best-artworks-of-all-time.csv"
 
 # Load the latest version
-df = kagglehub.load_dataset(
-  KaggleDatasetAdapter.PANDAS,
-  "ikarus777/best-artworks-of-all-time",
-  fp
+
+api.dataset_download_files(
+    "ikarus777/best-artworks-of-all-time",
+    path = './files'
   # Provide any additional arguments like 
   # sql_query or pandas_kwargs. See the 
   # documenation for more information:
   # https://github.com/Kaggle/kagglehub/blob/main/README.md#kaggledatasetadapterpandas
 )
 
+df = pd.read_csv('./files/artists.csv')
+
 print("First 5 records:", df.head())
-print(df.shape())
