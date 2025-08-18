@@ -15,7 +15,7 @@ for idx, row in artists_df.iterrows():
     name_parts = artist_name.strip().split(' ')
     first_last = '_'.join(name_parts)
     for i in range(paintings_count):
-        image_name = f"{first_last}_{i}"
+        image_name = f"{first_last}_{i+1}.jpg"
         new_rows.append({
             'image_name': image_name,
             'genre': genre
