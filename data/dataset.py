@@ -6,8 +6,8 @@ from torchvision import datasets, transforms
 from torch.utils.data.sampler import SubsetRandomSampler
 from torch.utils.data import DataLoader, Dataset
 from skimage.io import imread
+import os
 
-artists_csv = pd.read_csv('data/files/artists.csv')
 
 class ArtGenreDataset(Dataset):
     def __init__(self, images_dir, csv_path, transform=None):
@@ -20,7 +20,7 @@ class ArtGenreDataset(Dataset):
 
     def _build_genre_index(self):
         all_genres = set()
-        for genres in self.data[1]: 
+        for genres in self.data['genre']: 
             genre_list = genres.split(', ')
             all_genres.update(genre_list)
         return {genre: idx for idx, genre in enumerate(sorted(all_genres))}
@@ -32,7 +32,7 @@ class ArtGenreDataset(Dataset):
         img = imread(image_name)
         
         if self.transform:
-            image = self.transform(image)
+            img = self.transform(img)
         genre_str = self.data.iloc[idx, 1]
         genre_list = genre_str.split(', ')
         label_vector = torch.zeros(self.n_classes, dtype=torch.float32)
@@ -40,7 +40,7 @@ class ArtGenreDataset(Dataset):
             genre = genre.strip()
             if genre in self.genre_to_index:
                 label_vector[self.genre_to_index[genre]] = 1.0
-        return image, label_vector
+        return img, label_vector
 
 
 
