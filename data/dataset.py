@@ -5,7 +5,7 @@ import pandas as pd
 from torchvision import datasets, transforms
 from torch.utils.data.sampler import SubsetRandomSampler
 from torch.utils.data import DataLoader, Dataset
-from skimage.io import imread
+from skimage.io import io
 import os
 
 
@@ -29,7 +29,7 @@ class ArtGenreDataset(Dataset):
         return len(self.data)
     def __getitem__(self, idx):
         image_name = os.path.join(self.images_dir, self.data.iloc[idx, 0])
-        img = imread(image_name)
+        img = io.imread(image_name)
         
         if self.transform:
             img = self.transform(img)
