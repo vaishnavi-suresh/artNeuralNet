@@ -14,7 +14,7 @@ from torchvision.transforms import v2
 
 T = v2.Compose([
     v2.CenterCrop([224,224]),
-    v2.ColorJitter(brightness= [0.4,0.6], contrast = [0.4,0.6], saturation = [0.4,0.,6])
+    v2.ColorJitter(brightness= [0.4,0.6], contrast = [0.4,0.6], saturation = [0.4,0.6])
 ])
 
 art_dataset = ArtGenreDataset(
@@ -35,13 +35,20 @@ test_loader = DataLoader(test_dataset, batch_size=4, shuffle=False, num_workers=
 class ResidualBlock(nn.Module):
     def __init__(self, in_channels, out_channels, stride = 1, downsample = None) -> None:
         super().__init__()
+        
         self.conv1 = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size=1, stride = 1),
-            nn.BatchNorm2d(out_channels)    
+            nn.BatchNorm2d(out_channels),
+            nn.ReLU()    
         )
         self.conv2 = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, kernel_size=3, stride = 3, padding = 1),
-            nn.BatchNorm2d(out_channels)    
+            nn.Conv2d(out_channels, out_channels, kernel_size=3, stride = stride, padding = 1),
+            nn.BatchNorm2d(out_channels),   
+            nn.ReLU() 
+        )
+        self.conv3 = nn.Sequential(
+            nn.Conv2d(out_channels, out_channels*4, kernel_size=1, stride = stride, padding = 1),
+            nn.BatchNorm2d(out_channels*4)    
         )
         self.relu = nn.ReLU()
         self.downsample = downsample
@@ -49,42 +56,44 @@ class ResidualBlock(nn.Module):
     
     def forward(self,x):
         identity = x
-        x = self.conv1(x) 
-        x = self.conv2(x)
+        out = self.conv1(x) 
+        out = self.conv2(out)
+        out = self.conv3(out)
         if self.downsample:
-            identity =self.downsample(x)
+            identity =self.downsample(identity)
         
-        x+=identity
+        out+=identity
 
-        return self.relu(x)
+        return self.relu(out)
 
 class ResNet(nn.Module):
     def __init__(self,block, layers, num_classes, in_channels=None):
-        super.init()
+        super().__init__()
         self.in_channels = in_channels if in_channels else 64
         self.conv2to5 = nn.Sequential(
-            nn.Conv2d(self.in_channels, out_channels = self.in_channels, kernel_size=3, stride = 3, padding = 1),
-            nn.BatchNorm2d(self.in_channels)    
+            nn.Conv2d(self.in_channels, out_channels = self.in_channels, kernel_size=3, stride = 1, padding = 1),
+            nn.BatchNorm2d(self.in_channels),  
+            nn.ReLU(inplace = True)  
         )
         self.avgpool = nn.AvgPool2d(3, stride=1)
         self.layer0 = self._make_layer(block, 64, layers[0])
-        self.layer1 = self._make_layer(block, 128, layers[0])
-        self.layer2 = self._make_layer(block, 256, layers[0])
-        self.layer3 = self._make_layer(block, 512, layers[0])
+        self.layer1 = self._make_layer(block, 128, layers[1])
+        self.layer2 = self._make_layer(block, 256, layers[2])
+        self.layer3 = self._make_layer(block, 512, layers[3])
         self.dropout = nn.Dropout(.1)
-        self.fc = nn.Linear(512,num_classes)
+        self.fc = nn.Linear(2048,num_classes)
         
     def _make_layer(self, block, out_channels, blocks, stride = 1):
         downsample = None
-        if stride >1 or self.in_channels != self.out_channels:
-            downsample = nn.Sequential([
-                nn.Conv2d(in_channels = self.in_channels, out_channels=out_channels, kernel_size = 1, stride = stride, bias = false)
+        if stride > 1 or self.in_channels != out_channels:
+            downsample = nn.Sequential(
+                nn.Conv2d(in_channels=self.in_channels, out_channels=out_channels, kernel_size=1, stride=stride, bias=False),
                 nn.BatchNorm2d(out_channels)
-            ])
+            )
         layers = []
         layers.append(block(self.in_channels, out_channels, stride, downsample))
         self.in_channels = out_channels
-        for i in range(blocks):
+        for i in range(1,blocks):
             layers.append(block(self.in_channels, out_channels))
         return nn.Sequential(*layers)
     def forward(self, x):
