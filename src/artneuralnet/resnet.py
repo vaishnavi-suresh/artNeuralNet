@@ -12,25 +12,7 @@ from skimage.io import imread
 from data.dataset import ArtGenreDataset
 from torchvision.transforms import v2
 
-T = v2.Compose([
-    v2.CenterCrop([224,224]),
-    v2.ColorJitter(brightness= [0.4,0.6], contrast = [0.4,0.6], saturation = [0.4,0.6])
-])
 
-art_dataset = ArtGenreDataset(
-    images_dir='../../data/files/resized/resized',
-    csv_path='../../data/files/artist_images.csv',
-    transform=T
-)
-
-train_size = int(0.8 * len(art_dataset))
-test_size = len(art_dataset) - train_size
-
-generator = torch.Generator().manual_seed(42)
-train_dataset, test_dataset = random_split(art_dataset, [train_size, test_size], generator=generator)
-
-train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True, num_workers=4)
-test_loader = DataLoader(test_dataset, batch_size=4, shuffle=False, num_workers=4)
 
 class ResidualBlock(nn.Module):
     def __init__(self, in_channels, out_channels, stride = 1, downsample = None) -> None:
@@ -98,8 +80,6 @@ class ResNet(nn.Module):
         return nn.Sequential(*layers)
     def forward(self, x):
         x = self.conv2to5(x)
-        for i in range(4):
-            x = self.conv2to5(x)
         x = self.avgpool(x)
         x = self.layer0(x)
         x = self.layer1(x)
