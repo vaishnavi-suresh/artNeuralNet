@@ -3,6 +3,7 @@
 
 from kaggle.api.kaggle_api_extended import KaggleApi
 import pandas as pd
+import zipfile
 
 api= KaggleApi()
 api.authenticate()
@@ -21,5 +22,9 @@ api.dataset_download_files(
 )
 
 df = pd.read_csv('./files/artists.csv')
+
+with zipfile.ZipFile("./files/best-artworks-of-all-time.zip", 'r') as zip_ref:
+    zip_ref.extractall("./files")
+
 
 print("First 5 records:", df.head())
