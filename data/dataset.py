@@ -31,7 +31,7 @@ class ArtGenreDataset(Dataset):
         return len(self.data)
     def __getitem__(self, idx):
         image_name = os.path.join(self.images_dir, self.data.iloc[idx, 0])
-        img = Image.open(image_name)
+        img = Image.open(image_name).copy()
         
         if self.transform:
             img = self.transform(img)
