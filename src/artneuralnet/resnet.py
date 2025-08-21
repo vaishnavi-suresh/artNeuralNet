@@ -29,7 +29,7 @@ class ResidualBlock(nn.Module):
             nn.ReLU() 
         )
         self.conv3 = nn.Sequential(
-            nn.Conv2d(out_channels, out_channels*4, kernel_size=1, stride = stride, padding = 1),
+            nn.Conv2d(out_channels, out_channels*4, kernel_size=1, stride = stride),
             nn.BatchNorm2d(out_channels*4)    
         )
         self.relu = nn.ReLU()
@@ -49,11 +49,17 @@ class ResidualBlock(nn.Module):
         return self.relu(out)
 
 class ResNet(nn.Module):
-    def __init__(self,block, layers, num_classes, in_channels=None):
+    def __init__(self,block, layers, num_classes, in_channels=None, out = None):
         super().__init__()
-        self.in_channels = in_channels if in_channels else 64
+        
+        self.in_channels = 64
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(in_channels = 3, out_channels = self.in_channels , kernel_size=3, stride = 1, padding = 1),
+            nn.BatchNorm2d(self.in_channels),  
+            nn.ReLU(inplace = True)  
+        )
         self.conv2to5 = nn.Sequential(
-            nn.Conv2d(self.in_channels, out_channels = self.in_channels, kernel_size=3, stride = 1, padding = 1),
+            nn.Conv2d(in_channels = self.in_channels, out_channels = self.in_channels , kernel_size=3, stride = 1, padding = 1),
             nn.BatchNorm2d(self.in_channels),  
             nn.ReLU(inplace = True)  
         )
@@ -67,19 +73,21 @@ class ResNet(nn.Module):
         
     def _make_layer(self, block, out_channels, blocks, stride = 1):
         downsample = None
-        if stride > 1 or self.in_channels != out_channels:
+        if stride > 1 or self.in_channels != out_channels*4:
             downsample = nn.Sequential(
-                nn.Conv2d(in_channels=self.in_channels, out_channels=out_channels, kernel_size=1, stride=stride, bias=False),
-                nn.BatchNorm2d(out_channels)
+                nn.Conv2d(in_channels=self.in_channels, out_channels=out_channels*4, kernel_size=1, stride=stride, bias=False),
+                nn.BatchNorm2d(out_channels*4)
             )
         layers = []
         layers.append(block(self.in_channels, out_channels, stride, downsample))
-        self.in_channels = out_channels
+        self.in_channels = out_channels*4
         for i in range(1,blocks):
-            layers.append(block(self.in_channels, out_channels))
+            layers.append(block(self.in_channels, out_channels, downsample = None))
         return nn.Sequential(*layers)
     def forward(self, x):
-        x = self.conv2to5(x)
+        x = self.conv1(x)
+        for i in range(4):
+            x = self.conv2to5(x)
         x = self.avgpool(x)
         x = self.layer0(x)
         x = self.layer1(x)
