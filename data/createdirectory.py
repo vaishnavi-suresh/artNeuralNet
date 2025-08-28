@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 # Read the artists.csv file
 artists_df = pd.read_csv('./files/artists.csv')
@@ -16,10 +17,11 @@ for idx, row in artists_df.iterrows():
     first_last = '_'.join(name_parts)
     for i in range(paintings_count):
         image_name = f"{first_last}_{i+1}.jpg"
-        new_rows.append({
-            'image_name': image_name,
-            'genre': genre
-        })
+        if image_name in os.listdir("./files/resized/resized"):
+            new_rows.append({
+                'image_name': image_name,
+                'genre': genre
+            })
 
 # Create a new DataFrame from the new rows
 output_df = pd.DataFrame(new_rows)
