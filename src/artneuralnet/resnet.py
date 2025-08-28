@@ -1,6 +1,7 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:64"
 import torch
 import numpy as np
 import torch.nn as nn
@@ -94,6 +95,7 @@ class ResNet(nn.Module):
         x = self.dropout(x)
         x = self.layer2(x)
         x = self.layer3(x)
+        x = nn.functional.adaptive_avg_pool2d(x, (1,1))
         x = torch.flatten(x,1)
         x = self.fc(x)
         return x

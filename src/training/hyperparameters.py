@@ -2,7 +2,9 @@ import pandas as pd
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:64"
 import torch
+from torch.amp import autocast, GradScaler
 from src.artneuralnet.resnet import ResNet, ResidualBlock
 import numpy as np
 import torch.nn as nn
@@ -14,6 +16,12 @@ from torchvision.transforms import v2
 import gc
 import psutil
 import logging
+
+
+torch.backends.cudnn.benchmark = True
+torch.backends.cudnn.benchmark = False
+torch.backends.cudnn.deterministic = True
+scaler = GradScaler('cuda', enabled=torch.cuda.is_available())
 
 def log_memory():
     process = psutil.Process()
@@ -63,6 +71,7 @@ def train(num_classes = None, num_epochs= None, batch_size = None, learning_rate
     layers = layers if layers else [3,4,18,4]
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(device)
 
     model = ResNet(ResidualBlock, layers, num_classes).to(device)
 
@@ -76,8 +85,10 @@ def train(num_classes = None, num_epochs= None, batch_size = None, learning_rate
 
             images = img.to(device)
             label = label_vector.to(device)
-            out = model(images)
-            loss = criterion(out,label)
+            with autocast(device_type = 'cuda', dtype = torch.float16):
+                out = model(images)
+                loss = criterion(out,label)
+            
 
             optimizer.zero_grad(set_to_none=True)
             loss.backward()
@@ -85,9 +96,12 @@ def train(num_classes = None, num_epochs= None, batch_size = None, learning_rate
             optimizer.step()
             log_memory()
             log_gpu_memory()
+            
+           
 
 
         print ('Epoch [{}/{}], Loss: {:.4f}'.format(epoch+1, num_epochs, loss.item()))
+    torch.save(model.state_dict(), "resnet_art.pth")
 
 def main():
 
