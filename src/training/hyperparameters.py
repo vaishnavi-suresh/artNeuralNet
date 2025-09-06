@@ -57,8 +57,8 @@ test_size = len(art_dataset) - train_size
 generator = torch.Generator().manual_seed(42)
 train_dataset, test_dataset = random_split(art_dataset, [train_size, test_size], generator=generator)
 
-train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True, num_workers=1)
-test_loader = DataLoader(test_dataset, batch_size=4, shuffle=False, num_workers=1)
+train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True, num_workers=1)
+test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=1)
 
 def train(num_classes = None, num_epochs= None, batch_size = None, learning_rate = None, layers = None):
     df =pd.read_csv('../../data/files/artist_images.csv')
@@ -67,7 +67,7 @@ def train(num_classes = None, num_epochs= None, batch_size = None, learning_rate
     exp = exp.str.strip()
     num_classes = num_classes if num_classes else exp.nunique()
     num_epochs = num_epochs if num_epochs else 10
-    batch_size = batch_size if batch_size else 4
+    batch_size = batch_size if batch_size else 1
     learning_rate = learning_rate if learning_rate else 0.01
     layers = layers if layers else [3,4,18,4]
 
