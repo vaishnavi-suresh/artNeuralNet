@@ -21,7 +21,8 @@ import logging
 torch.backends.cudnn.benchmark = True
 torch.backends.cudnn.benchmark = False
 torch.backends.cudnn.deterministic = True
-scaler = GradScaler('cuda', enabled=torch.cuda.is_available())
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+scaler = GradScaler(enabled=(device.type == 'cuda'))
 
 def log_memory():
     process = psutil.Process()
@@ -70,37 +71,32 @@ def train(num_classes = None, num_epochs= None, batch_size = None, learning_rate
     learning_rate = learning_rate if learning_rate else 0.01
     layers = layers if layers else [3,4,18,4]
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(device)
-
     model = ResNet(ResidualBlock, layers, num_classes).to(device)
-
     criterion = nn.BCEWithLogitsLoss()
     optimizer = torch.optim.SGD(params = model.parameters(), lr = learning_rate, weight_decay=.001, momentum = .9)
 
-
-
-    for epoch in range (num_epochs):
+    for epoch in range(num_epochs):
         for i, (img, label_vector) in enumerate(train_loader):
-
             images = img.to(device)
             label = label_vector.to(device)
-            with autocast(device_type = 'cuda', dtype = torch.float16):
+            if device.type == 'cuda':
+                with autocast(device_type='cuda', dtype=torch.float16):
+                    out = model(images)
+                    loss = criterion(out, label)
+            else:
                 out = model(images)
-                loss = criterion(out,label)
-            
+                loss = criterion(out, label)
 
             optimizer.zero_grad(set_to_none=True)
             loss.backward()
             gc.collect()
             optimizer.step()
             log_memory()
-            log_gpu_memory()
-            
-           
+            if device.type == 'cuda':
+                log_gpu_memory()
 
-
-        print ('Epoch [{}/{}], Loss: {:.4f}'.format(epoch+1, num_epochs, loss.item()))
+        print('Epoch [{}/{}], Loss: {:.4f}'.format(epoch+1, num_epochs, loss.item()))
     torch.save(model.state_dict(), "resnet_art.pth")
 
 def main():
