@@ -64,6 +64,7 @@ def test(num_classes = None, num_epochs= None, batch_size = None, learning_rate 
                 predicted = (torch.sigmoid(out) > 0.5).int()
             label_int = label.int()
             correct += (predicted == label_int).sum().item()
+            print(correct)
             total += label_int.numel()
             precision += (predicted & label_int).sum().item()
             recall += (predicted & label_int).sum().item()
