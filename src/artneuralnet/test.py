@@ -5,7 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:64"
 import torch
 from torch.amp import autocast, GradScaler
-from src.artneuralnet.resnet import ResNet, ResidualBlock
+from artneuralnet.resnet import ResNet, ResidualBlock
 import numpy as np
 import torch.nn as nn
 import pandas as pd
