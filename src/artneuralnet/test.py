@@ -80,4 +80,10 @@ def test(num_classes = None, num_epochs= None, batch_size = None, learning_rate 
     print('Test Accuracy: {:.2f}%'.format(accuracy))
     print('Test F1 Score: {:.4f}'.format(f1))
     print('Final Test Loss: {:.4f}'.format(loss.item()))
+def main():
+
+    test()
+
+if __name__ == "__main__":
+    main()
 
