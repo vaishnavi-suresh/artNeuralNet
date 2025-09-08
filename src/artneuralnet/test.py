@@ -33,6 +33,10 @@ def test(num_classes = None, num_epochs= None, batch_size = None, learning_rate 
     batch_size = batch_size if batch_size else 2
     learning_rate = learning_rate if learning_rate else 0.01
     layers = layers if layers else [3,4,18,4]
+    correct = 0
+    total = 0
+    precision = 0
+    recall = 0
 
     print(device)
     model = ResNet(ResidualBlock, layers, num_classes).to(device)
