@@ -14,9 +14,9 @@ kaggle = ">=1.7.4.5,<2.0.0.0"
 scikit-image = ">=0.25.2,<0.26.0"
 jupyter = ">=1.1.1,<2.0.0"
 psutil = ">=5.9.0,<6.0.0"
-torch = {version = "2.6.*", source = "pytorch-cu124"}
-torchvision = {version = "0.21.*", source = "pytorch-cu124"}
-torchaudio = {version = "2.6.*", source = "pytorch-cu124"}
+torch = {version = "2.6.*", source = "pytorch-cu121"}
+torchvision = {version = "0.21.*", source = "pytorch-cu121"}
+torchaudio = {version = "2.6.*", source = "pytorch-cu121"}
 
 [[tool.poetry.source]]
 name = "pytorch-cu121"
