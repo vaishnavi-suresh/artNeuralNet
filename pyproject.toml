@@ -21,7 +21,7 @@ torchaudio = {version = "2.6.*", source = "pytorch-cu124"}
 [[tool.poetry.source]]
 name = "pytorch-cu124"
 url = "https://download.pytorch.org/whl/cu124"
-priority = "supplemental"
+priority = "explicit"
 
 
 [tool.poetry]
