@@ -14,12 +14,12 @@ kaggle = ">=1.7.4.5,<2.0.0.0"
 scikit-image = ">=0.25.2,<0.26.0"
 jupyter = ">=1.1.1,<2.0.0"
 psutil = ">=5.9.0,<6.0.0"
-torch = { source = "pytorch-cu121"}
+torch = { source = "pytorch-cu128"}
 
 
 [[tool.poetry.source]]
-name = "pytorch-cu121"
-url = "https://download.pytorch.org/whl/cu121"
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
 priority = "explicit"
 
 
