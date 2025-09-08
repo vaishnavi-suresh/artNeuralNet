@@ -55,13 +55,13 @@ def test(num_classes = None, num_epochs= None, batch_size = None, learning_rate 
                     out = model(images)
                     loss = criterion(out, label)
                     val_loss += loss.item()
-                    _, predicted = torch.max(out.data, 1)
+                    predicted = (torch.sigmoid(out) > 0.5).int())
                     
             else:
                 out = model(images)
                 loss = criterion(out, label)
                 val_loss += loss.item()
-                _, predicted = torch.max(out.data, 1)
+                predicted = (torch.sigmoid(out) > 0.5).int())
             correct += (predicted == label).sum().item()
             total += label.size(0)
             precision += (predicted & label).sum().item()
