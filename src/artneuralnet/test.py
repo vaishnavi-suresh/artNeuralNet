@@ -77,7 +77,6 @@ def test(num_classes = None, num_epochs= None, batch_size = None, learning_rate 
         
         
     accuracy = 100 * correct / total
-    f1 = 2 * (precision * recall) / (precision + recall)
     with open('../../tests/test_results.txt', 'w') as f:
         f.write(f'Test Accuracy: {accuracy:.2f}%\n')
         f.write(f'Final Test Loss: {loss.item():.4f}\n')
