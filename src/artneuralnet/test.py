@@ -66,8 +66,7 @@ def test(num_classes = None, num_epochs= None, batch_size = None, learning_rate 
             correct += (predicted == label_int).sum().item()
             print(correct)
             total += label_int.numel()
-            precision += (predicted & label_int).sum().item()
-            recall += (predicted & label_int).sum().item()
+
             
             
             
@@ -81,7 +80,6 @@ def test(num_classes = None, num_epochs= None, batch_size = None, learning_rate 
     f1 = 2 * (precision * recall) / (precision + recall)
     with open('../../tests/test_results.txt', 'w') as f:
         f.write(f'Test Accuracy: {accuracy:.2f}%\n')
-        f.write(f'Test F1 Score: {f1:.4f}\n')
         f.write(f'Final Test Loss: {loss.item():.4f}\n')
     print('Test Accuracy: {:.2f}%'.format(accuracy))
     print('Test F1 Score: {:.4f}'.format(f1))
