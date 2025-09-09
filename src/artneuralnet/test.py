@@ -81,7 +81,6 @@ def test(num_classes = None, num_epochs= None, batch_size = None, learning_rate 
         f.write(f'Test Accuracy: {accuracy:.2f}%\n')
         f.write(f'Final Test Loss: {loss.item():.4f}\n')
     print('Test Accuracy: {:.2f}%'.format(accuracy))
-    print('Test F1 Score: {:.4f}'.format(f1))
     print('Final Test Loss: {:.4f}'.format(loss.item()))
 def main():
 
